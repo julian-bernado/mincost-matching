@@ -1,5 +1,7 @@
 # mincost-matching
-STATS 606 Project with Josh Garman, Yizhou Gu, and Samuel Rosenberg
+STATS 606 Project with Josh Garman, Yizhou Gu, and Samuel Rosenberg.  
+
+[Here's our proposal](https://www.overleaf.com/project/67c09af38492f9512e9b49d7)
 
 ## To-dos before our March 21st meeting
 We'll split into two pairs
