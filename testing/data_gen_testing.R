@@ -7,18 +7,18 @@ library(tidyverse)
 ### treated and control
 n <- 500
 prob_treated <- 0.5
-beta <- rep(0, 2)
+beta <- c(0, 0)
 tau <- 0
-beta_tau <- rep(0, 2)
+beta_tau <- c(0, 0)
 sigma <- 1
 bounded_params <- list(
-  data.frame(a = 1, b = 1), data.frame(a = 1, b = 1)
+  treated = data.frame(a = 1, b = 1), control = data.frame(a = 1, b = 1)
 )
 cont_params <- list(
-  data.frame(mean = 0, sd = 1), data.frame(mean = 0, sd = 1)
+  treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 0, sd = 1)
 )
 test1_data <- gen_data(
-  n, prob_treated, beta, tau, beta_tau, sigma, bounded_params, cont_params
+  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
 )
 
 # Check proportion of treated
@@ -49,13 +49,13 @@ tau <- 0
 beta_tau <- c(0, 0)
 sigma <- 1
 bounded_params <- list(
-  data.frame(a = 1, b = 1), data.frame(a = 10, b = 10)
+  treated = data.frame(a = 1, b = 1), control = data.frame(a = 10, b = 10)
 )
 cont_params <- list(
-  data.frame(mean = 0, sd = 1), data.frame(mean = 10, sd = 1)
+  treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 10, sd = 1)
 )
 test2_data <- gen_data(
-  n, prob_treated, beta, tau, beta_tau, sigma, bounded_params, cont_params
+  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
 )
 
 # Check proportion of treated
@@ -86,13 +86,13 @@ tau <- 10
 beta_tau <- c(0, 0)
 sigma <- 1
 bounded_params <- list(
-  data.frame(a = 1, b = 1), data.frame(a = 1, b = 1)
+  treated = data.frame(a = 1, b = 1), control = data.frame(a = 1, b = 1)
 )
 cont_params <- list(
-  data.frame(mean = 0, sd = 1), data.frame(mean = 0, sd = 1)
+  treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 0, sd = 1)
 )
 test3_data <- gen_data(
-  n, prob_treated, beta, tau, beta_tau, sigma, bounded_params, cont_params
+  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
 )
 
 # Check proportion of treated
@@ -123,10 +123,10 @@ tau <- 0
 beta_tau <- c(0, 0)
 sigma <- 1
 bounded_params <- list(
-  data.frame(a = 1, b = 1), data.frame(a = 10, b = 10)
+  treated = data.frame(a = 1, b = 1), control = data.frame(a = 10, b = 10)
 )
 cont_params <- list(
-  data.frame(mean = 0, sd = 1), data.frame(mean = 10, sd = 1)
+  treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 10, sd = 1)
 )
 test4_data <- gen_data(
   n, prob_treated, beta, tau, beta_tau, sigma, bounded_params, cont_params
@@ -160,13 +160,13 @@ tau <- 5
 beta_tau <- c(5, 10)
 sigma <- 1
 bounded_params <- list(
-  data.frame(a = 1, b = 1), data.frame(a = 10, b = 10)
+  treated = data.frame(a = 1, b = 1), control = data.frame(a = 10, b = 10)
 )
 cont_params <- list(
-  data.frame(mean = 0, sd = 1), data.frame(mean = 10, sd = 1)
+  treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 10, sd = 1)
 )
 test5_data <- gen_data(
-  n, prob_treated, beta, tau, beta_tau, sigma, bounded_params, cont_params
+  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
 )
 
 # Check proportion of treated
@@ -184,5 +184,35 @@ test5_data |> ggplot(aes(x = cont_1, fill = factor(Z))) +
 
 # Check the distribution of the outcome by treatment status
 test5_data |> ggplot(aes(x = Y, fill = factor(Z))) +
+  geom_histogram(alpha = 0.5) +
+  facet_wrap(~ Z)
+
+### Test case 6:
+### pure noise, 500 observations, only 1 continuous covariate, same covariate 
+### distributions for treated and control.
+n <- 500
+prob_treated <- 0.5
+beta <- c(0)
+tau <- 0
+beta_tau <- c(0)
+sigma <- 1
+bounded_params <- NULL
+cont_params <- list(
+  treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 0, sd = 1)
+)
+test6_data <- gen_data(
+  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
+)
+
+# Check proportion of treated
+prop.table(table(test6_data$Z))
+
+# Check the distribution of the continuous covariates by treatment status
+test6_data |> ggplot(aes(x = cont_1, fill = factor(Z))) +
+  geom_histogram(alpha = 0.5) +
+  facet_wrap(~ Z)
+
+# Check the distribution of the outcome by treatment status
+test6_data |> ggplot(aes(x = Y, fill = factor(Z))) +
   geom_histogram(alpha = 0.5) +
   facet_wrap(~ Z)
