@@ -18,7 +18,8 @@ cont_params <- list(
   treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 0, sd = 1)
 )
 test1_data <- gen_data(
-  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
+  n, prob_treated, bounded_params, cont_params, 
+  gen_outcomes = TRUE, sigma, beta, tau, beta_tau
 )
 
 # Check proportion of treated
@@ -55,7 +56,8 @@ cont_params <- list(
   treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 10, sd = 1)
 )
 test2_data <- gen_data(
-  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
+  n, prob_treated, bounded_params, cont_params, 
+  gen_outcomes = TRUE, sigma, beta, tau, beta_tau
 )
 
 # Check proportion of treated
@@ -92,7 +94,8 @@ cont_params <- list(
   treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 0, sd = 1)
 )
 test3_data <- gen_data(
-  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
+  n, prob_treated, bounded_params, cont_params, 
+  gen_outcomes = TRUE, sigma, beta, tau, beta_tau
 )
 
 # Check proportion of treated
@@ -129,7 +132,8 @@ cont_params <- list(
   treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 10, sd = 1)
 )
 test4_data <- gen_data(
-  n, prob_treated, beta, tau, beta_tau, sigma, bounded_params, cont_params
+  n, prob_treated, bounded_params, cont_params, 
+  gen_outcomes = TRUE, sigma, beta, tau, beta_tau
 )
 
 # Check proportion of treated
@@ -166,7 +170,8 @@ cont_params <- list(
   treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 10, sd = 1)
 )
 test5_data <- gen_data(
-  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
+  n, prob_treated, bounded_params, cont_params, 
+  gen_outcomes = TRUE, sigma, beta, tau, beta_tau
 )
 
 # Check proportion of treated
@@ -201,7 +206,8 @@ cont_params <- list(
   treated = data.frame(mean = 0, sd = 1), control = data.frame(mean = 0, sd = 1)
 )
 test6_data <- gen_data(
-  n, prob_treated, sigma, beta, tau, beta_tau, bounded_params, cont_params
+  n, prob_treated, bounded_params, cont_params, 
+  gen_outcomes = TRUE, sigma, beta, tau, beta_tau
 )
 
 # Check proportion of treated

@@ -9,11 +9,6 @@
 # The inputs for this function are:
 # - n:              the number of individuals/observations.
 # - prob_treated:   the probability of each individual being treated.
-# - sigma:          the standard deviation of the error term.
-# - beta:           the vector capturing covariate effects.
-# - tau:            the non-heterogeneous treatment effect.
-# - beta_tau:       the vector capturing heterogeneous treatment effects of 
-#                   covariates.
 # - bounded_params: bounded covariates are modeled as beta random variables.
 #                   this contains parameters for the beta distribution of the 
 #                   bounded covariates and is provided as a list of two 
@@ -24,9 +19,15 @@
 #                   this is provided as a list of two dataframes (one treated,
 #                   one control), where each row corresponds to the parameters
 #                   for a single continuous covariate.
+# - gen_outcomes:   a boolean indicating whether to generate the outcome variable.
+# - sigma:          the standard deviation of the error term.
+# - beta:           the vector capturing covariate effects.
+# - tau:            the non-heterogeneous treatment effect.
+# - beta_tau:       the vector capturing heterogeneous treatment effects of 
+#                   covariates.
 gen_data <- function(
-  n, prob_treated, sigma, beta, tau, beta_tau, 
-  bounded_params = NULL, cont_params = NULL
+  n, prob_treated, bounded_params, cont_params,
+  gen_outcomes = FALSE, sigma = NULL, beta = NULL, tau = NULL, beta_tau = NULL 
 ) {
   # Generate the treatment indicator
   Z <- rbinom(n = n, size = 1, p = prob_treated)
@@ -55,12 +56,17 @@ gen_data <- function(
   # Combine the covariates
   X <- cbind(bounded_covs, cont_covs)
   
-  # Generate the error term
-  error <- rnorm(n, 0, sigma)
+  if(gen_outcomes){
+    # Generate the error term
+    error <- rnorm(n, 0, sigma)
+    
+    # Generate the outcome
+    Y <- X %*% beta + tau * Z + X %*% beta_tau * Z + error
+    
+    # Return the data
+    return(data.frame(Y = Y, Z = Z, X))
+  } else{
+    return(data.frame(Z = Z, X))
+  }
   
-  # Generate the outcome
-  Y <- X %*% beta + tau * Z + X %*% beta_tau * Z + error
-  
-  # Return the data
-  return(data.frame(Y = Y, Z = Z, X))
 }
