@@ -13,23 +13,23 @@
 # Namely, we let mu range from 0 to mu_upper(n, p, sd)
 # where mu_upper(n, p, sd) = mu* is such that
 # P(max(X in treatment) >  min(X in control)) = 0.95
-n_lower <- 100
+n_lower <- 10
 n_lower_exp <- log10(n_lower)
-n_upper <- 1e5
+n_upper <- 1000
 n_upper_exp <- log10(n_upper)
 n_size <- 10
 n <- round(10^seq(from = n_lower_exp, to = n_upper_exp, length.out = n_size))
 
 p_lower <- 0.05
 p_upper <- 0.95
-p_size <- 10
+p_size <- 5
 p <- seq(from = p_lower, to = p_upper, length.out = p_size)
-
 
 sd_lower <- 1/5
 sd_upper <- 5
-sd_size <- 10
-sd <- seq(from = sd_lower, to = sd_upper, length.out = sd_size)
+sd_size <- 5
+sd <- round(seq(from = sd_lower, to = sd_upper, length.out = sd_size), 2)
+
 
 # Now we implement the calculations to determine mu_upper
 integrand <- function(x, mu, sigma, nt, nc) {
@@ -114,7 +114,7 @@ first_order_grid <- expand.grid(
   sd = sd
 )
 
-mu_size <- 10
+mu_size <- 5
 
 # For each of these values in the first order grid
 # we're going to have mu_size values of mu
@@ -124,9 +124,8 @@ for (i in 1:(mu_size - 1)){
   second_order_grid <- rbind(second_order_grid, first_order_grid)
 }
 second_order_grid$mu <- NA
+second_order_grid$imbalance <- NA
 
-library(tibble)
-tibble(second_order_grid)
 # Now we need to fill in the mu values
 # We will do this by looping over the first order grid
 # and filling in the mu values for each row of the second order grid
@@ -134,24 +133,25 @@ tibble(second_order_grid)
 # and we will use seq to generate mu_size values from 0 to mu_upper
 for (i in 1:nrow(first_order_grid)) {
   row <- first_order_grid[i, ]
-  n <- row[1]
-  p <- row[2]
-  sd <- row[3]
+  n <- row$n
+  p <- row$p
+  sd <- row$sd
   relevant_rows <- (second_order_grid$n == n) & (second_order_grid$p == p) & (second_order_grid$sd == sd)
   max_mu <- mu_upper(n, p, sd, simple = TRUE)
-  if (is.na(max_mu)) {
-    second_order_grid[relevant_rows, "mu"]  <- rep(NA, times = mu_size)
-  } else {
+  if (!is.na(max_mu)) {
     mu <- seq(from = 0, to = max_mu, length.out = mu_size)
+    imbalance <- mu/max_mu
     second_order_grid[relevant_rows, "mu"]  <- mu
+    second_order_grid[relevant_rows, "imbalance"]  <- imbalance
   }
 }
-sum((second_order_grid$n == 100) & (second_order_grid$p == 0.35) & (second_order_grid$sd == 0.2))
-print(second_order_grid)
+second_order_grid <- second_order_grid[!is.na(second_order_grid$mu), ]
+second_order_grid <- second_order_grid[second_order_grid$mu != 0, ]
 
 
+full_grid <- second_order_grid[rep(seq_len(nrow(second_order_grid)), each = 3), ]
+full_grid$mc <- rep(seq_len(3), times = nrow(second_order_grid))
 
-mc_lower <- 1
-mc_upper <- 10
-mc_size <- 10
-mc <- 1:5
+print(summary(full_grid$imbalance))
+
+write.csv(full_grid, "grids/prognostic_grid.csv", row.names = FALSE)

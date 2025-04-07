@@ -3,8 +3,8 @@
 # The results are saved in `results/`
 library(dplyr)
 library(readr)
-source("data_gen.R")
-source("run_mcf.R")
+source("scripts/data_gen.R")
+source("scripts/run_mcf.R")
 
 # Read in the argument passed in when running the file
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -20,6 +20,7 @@ df$cycle_times <- NA
 
 # Now, we can run the simulation for each row of the grid
 for (i in 1:nrow(df)) {
+  print(paste0(i, " out of ", nrow(df)))
   params <- df[i, ]
   result <- run_simulation(params, grid_type = grid_type)
   df[i, c("simplex_times", "cost_times", "capacity_times", "cycle_times")] <- result
@@ -27,3 +28,4 @@ for (i in 1:nrow(df)) {
 
 # Save the results
 results_path <- file.path("results", paste0(grid_type, "_results.csv"))
+write_csv(df, results_path)
