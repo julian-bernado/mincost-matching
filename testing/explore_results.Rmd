@@ -1,0 +1,124 @@
+# Hello
+hello
+```{r}
+df <- read.csv("results/prognostic_results.csv")
+```
+
+
+# Plots 
+Let's make some plots based on the prognostic results
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Let's make a function to plot the results
+# Now a plot with one line for each of the columns: simplex_times, cost_times, capacity_times, cycle_times.
+# The y-axis should be time, the x-axis should be the column name passed in
+
+df <- df %>% 
+  mutate(simplex_times = as.numeric(simplex_times),
+         cost_times = as.numeric(cost_times)/as.numeric(simplex_times),
+         capacity_times = as.numeric(capacity_times)/as.numeric(simplex_times),
+         cycle_times = as.numeric(cycle_times)/as.numeric(simplex_times))
+
+plot_time_vs_var <- function(var_name) {
+  # Load necessary libraries
+  library(ggplot2)
+  library(tidyr)
+  
+  # Specify the time columns
+  time_cols <- c("cost_times", "simplex_times", "cycle_times")
+  
+  # Reshape the dataframe to long format for the time columns
+  df_long <- pivot_longer(df, 
+                          cols = all_of(time_cols), 
+                          names_to = "time_type", 
+                          values_to = "time_value")
+  
+  # Create the plot
+  p <- ggplot(df_long, aes_string(x = var_name, y = "time_value", color = "time_type")) +
+    geom_point() +
+    labs(x = var_name, 
+         y = "Time", 
+         color = "Time Type") +
+    theme_minimal()
+  
+  return(p)
+}
+
+plot_time_vs_var("imbalance")
+```
+
+```{r}
+plot_time_averages <- function(df) {
+  # Load necessary libraries
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  
+  # Define the time columns
+  time_cols <- c("simplex_times", "cost_times", "capacity_times", "cycle_times")
+  
+  # Reshape the data into long format
+  df_long <- pivot_longer(df, 
+                          cols = all_of(time_cols), 
+                          names_to = "time_type", 
+                          values_to = "time_value")
+  
+  # Calculate average for each time column
+  avg_df <- df_long %>%
+    group_by(time_type) %>%
+    summarize(avg_time = mean(time_value, na.rm = TRUE))
+  
+  # Create the bar chart
+  p <- ggplot(avg_df, aes(x = time_type, y = avg_time, fill = time_type)) +
+    geom_bar(stat = "identity") +
+    labs(x = "Time Type", y = "Average Time", title = "Average Time for Each Type") +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  return(p)
+}
+
+plot_time_averages(df)
+```
+
+
+```{r}
+plot_time_vs_var_box <- function(df, var_name) {
+  # Load necessary libraries
+  library(ggplot2)
+  library(tidyr)
+  
+  # Define the time columns
+  time_cols <- c("simplex_times", "cost_times", "capacity_times", "cycle_times")
+  
+  # Reshape the data to long format for the time columns
+  df_long <- pivot_longer(
+    df,
+    cols = all_of(time_cols),
+    names_to = "time_type",
+    values_to = "time_value"
+  )
+  
+  # Create the boxplot
+  p <- ggplot(df_long, aes_string(x = var_name, y = "time_value", fill = "time_type")) +
+    geom_boxplot(position = position_dodge(width = 0.8)) +
+    labs(
+      x = var_name,
+      y = "Time",
+      fill = "Time Type",
+      title = "Boxplots of Time Distributions by Variable"
+    ) +
+    theme_minimal()
+  
+  return(p)
+}
+plot_time_vs_var_box(df, "imbalance")
+
+
+plot(df$simplex_times, df$cost_times)
+plot(df$simplex_times, df$capacity_times)
+plot(df$simplex_times, df$cycle_times)
+```

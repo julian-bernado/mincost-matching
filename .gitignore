@@ -1,0 +1,8 @@
+# Ignore grids
+grids/
+
+# Ignore results
+results/
+
+# Make sure none of the RDS files are tracked
+*.rds
