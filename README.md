@@ -54,3 +54,4 @@ i think all possible next steps are:
     - if not, let's demonstrate in the report that we tried to do this, it's a bolstering of the neutral result
 - think about any other nice visualization or tests
 - clean up the report (tables inconsistent, expand on mcf algorithms, add an image showing what the actual graphs look like)
+- not sure i really like the name either
