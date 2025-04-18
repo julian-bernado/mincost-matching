@@ -5,8 +5,12 @@ library(dplyr)
 library(readr)
 source("scripts/mcf_helpers.R")
 
+#define number of simulations for each combination in the grid
+n_sims = 500
+
 # Define grid types to process
-grid_types <- c("prognostic", "propensity")
+#grid_types <- c("prognostic", "propensity")
+grid_types <- c("propensity")
 
 # Loop over each grid type
 for (grid_type in grid_types) {
@@ -24,7 +28,7 @@ for (grid_type in grid_types) {
   for (i in 1:nrow(df)) {
     print(paste0(i, " out of ", nrow(df)))
     params <- df[i, ]
-    result <- run_simulation(params, grid_type = grid_type)
+    result <- run_simulation(params, grid_type = grid_type, n_sims = n_sims)
     df[i, c("simplex_times", "cost_times", "capacity_times", "cycle_times")] <- result
   }
   
